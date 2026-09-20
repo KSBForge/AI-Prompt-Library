@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #c9a45c;
+  --gold-bright: #e8c77a;
+  --primary: #080706;
+  --secondary: #11100d;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 164, 92, 0.4) #0a0908;
+}
+
+/* Lenis smooth-scroll compatibility */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  @apply bg-primary font-sans text-ivory antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(201, 164, 92, 0.85);
+  color: #080706;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0908;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(201, 164, 92, 0.55), rgba(201, 164, 92, 0.25));
+  border-radius: 8px;
+  border: 2px solid #0a0908;
+}
+
+@layer components {
+  /* Subtle glassmorphism used across premium surfaces */
+  .glass {
+    background: linear-gradient(160deg, rgba(24, 21, 16, 0.72), rgba(12, 11, 9, 0.6));
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(201, 164, 92, 0.16);
+  }
+  .glass-strong {
+    background: linear-gradient(160deg, rgba(26, 23, 17, 0.9), rgba(13, 12, 9, 0.86));
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(201, 164, 92, 0.22);
+  }
+
+  .thin-gold-border {
+    border: 1px solid rgba(201, 164, 92, 0.28);
+  }
+
+  /* Champagne-gold gradient text for highlighted words */
+  .gold-text {
+    background: linear-gradient(100deg, #a8813f 0%, #e8c77a 45%, #c9a45c 70%, #f2ddab 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .gold-text-shimmer {
+    animation: shimmer 5s linear infinite;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-luxe text-gold;
+  }
+  .eyebrow::after {
+    content: "";
+    @apply h-px w-12 bg-gradient-to-r from-gold/70 to-transparent;
+  }
+
+  .section-pad {
+    @apply px-5 py-24 sm:px-8 md:py-32 lg:px-12;
+  }
+  .container-luxe {
+    @apply mx-auto w-full max-w-7xl;
+  }
+
+  .heading-xl {
+    @apply font-serif text-[clamp(2.6rem,6vw,4.8rem)] leading-[1.04] font-medium text-ivory;
+  }
+  .heading-lg {
+    @apply font-serif text-[clamp(2.2rem,4.6vw,3.6rem)] leading-[1.08] font-medium text-ivory;
+  }
+  .heading-md {
+    @apply font-serif text-[clamp(1.5rem,2.6vw,2.1rem)] leading-snug font-medium text-ivory;
+  }
+
+  .gold-hairline {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-gold/40 to-transparent;
+  }
+
+  /* Cinematic image treatment shared by all photography */
+  .img-cinema {
+    @apply select-none object-cover;
+    filter: saturate(0.94) contrast(1.05) brightness(0.96);
+  }
+
+  .field-input {
+    @apply w-full rounded-lg border border-gold/20 bg-black/35 px-4 py-3 text-sm text-ivory placeholder:text-muted/50 outline-none transition-all duration-300 focus:border-gold/60 focus:bg-black/50 focus:ring-2 focus:ring-gold/15;
+  }
+  .field-label {
+    @apply mb-2 block text-[11px] font-semibold uppercase tracking-wider2 text-muted;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .mask-fade-radial {
+    -webkit-mask-image: radial-gradient(ellipse 62% 56% at 50% 50%, black 52%, transparent 76%);
+    mask-image: radial-gradient(ellipse 62% 56% at 50% 50%, black 52%, transparent 76%);
+  }
+  .perspective-1200 {
+    perspective: 1200px;
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+}
+
+/* Dark cinematic styling for the embedded Google map */
+.dark-map {
+  filter: grayscale(1) invert(0.92) contrast(0.88) hue-rotate(190deg) saturate(0.5) brightness(0.92);
+}
+
+/* Slow cinematic camera drift on the hero photograph */
+@keyframes hero-zoom {
+  0% {
+    transform: scale(1.07) translateX(0);
+  }
+  100% {
+    transform: scale(1.16) translateX(-1.5%);
+  }
+}
+
+.animate-hero-zoom {
+  animation: hero-zoom 30s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Graceful fallback: kill decorative motion when the visitor prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-zoom {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
