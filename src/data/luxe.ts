@@ -47,15 +47,15 @@ export const salonInfo = {
 /*  deck: champagne marble reception, glow mirrors, charcoal interiors. */
 
 export const imagery = {
-  heroMain: img("1562320801-941cc54cf4db", 2200), // warm salon interior glow
-  heroAccent: img("1522337360788-8b13dee82a3f", 700), // ambient warmth accent
+  heroMain: img("1600334129128-685c5582fd35", 2200), // warm salon interior glow
+  heroAccent: img("1519500099198-fd81846b8f03", 700), // ambient warmth accent
   aboutMain: img("1560066984-138dadb4c035", 1400), // stylist at work
   aboutAccent: img("1521590832167-7bcbfaa6381f", 800), // mirror + chair
   servicesBackdrop: img("1521590832167-7bcbfaa6381f", 2000),
   productsMain: img("1522335789203-aabd1fc54bc9", 1400), // premium products
-  finalCta: img("1560869713-da8bd449eb95", 2000), // stylist & client
-  bookingSide: img("1522108823255-3734d03cdfff", 900),
-  galleryAmbience: img("1633681924625-63b4390f7f28", 1200), // dark luxe salon
+  finalCta: img("1616394584738-fc6e612e71b9", 2000), // stylist & client
+  bookingSide: img("1583416750470-965b2707b355", 900),
+  galleryAmbience: img("1600948836101-f9ffda59d250", 1200), // dark luxe salon
   galleryVibe: img("1507003211169-0a1dd7228f2d", 1000),
 } as const;
 
@@ -178,7 +178,7 @@ export const services: Service[] = [
     description:
       "Precision cuts tailored to your face shape, hair texture and lifestyle — finished with a polished blow-dry style.",
     price: "from ₹399",
-    image: img("1620331312220-0e4e6abd6fa2", 900),
+    image: img("1504593811423-6dd665756598", 900),
     icon: "haircut",
   },
   {
@@ -284,7 +284,7 @@ export const galleryCategories: Array<{ id: "all" | GalleryCategory; label: stri
 ];
 
 export const galleryItems: GalleryItem[] = [
-  { id: "g1", src: img("1620331312220-0e4e6abd6fa2", 1000), alt: "Fresh men's fade haircut", caption: "The Signature Fade", category: "haircuts" },
+  { id: "g1", src: img("1504593811423-6dd665756598", 1000), alt: "Fresh men's fade haircut", caption: "The Signature Fade", category: "haircuts" },
   { id: "g2", src: img("1519699047748-de8e457a634e", 1000), alt: "Glossy balayage colour result", caption: "Golden Hour Balayage", category: "colour" },
   { id: "g3", src: img("1526045478516-99145907023c", 1000), alt: "Hair spa wash ritual", caption: "Wash-Day Rituals", category: "skin" },
   { id: "g4", src: img("1570172619644-dfd03ed5d881", 1000), alt: "Calming facial treatment", caption: "The Glow Series", category: "skin" },
@@ -295,7 +295,7 @@ export const galleryItems: GalleryItem[] = [
   { id: "g9", src: imagery.galleryAmbience, alt: "LUXE salon interior with glow mirrors", caption: "Our Space", category: "space" },
   { id: "g10", src: imagery.productsMain, alt: "Premium salon products styled on marble", caption: "Premium Products", category: "space" },
   { id: "g11", src: imagery.finalCta, alt: "Stylist finishing a client's look", caption: "The LUXE Finish", category: "haircuts" },
-  { id: "g12", src: img("1522337360788-8b13dee82a3f", 1000), alt: "Warm champagne light through the salon", caption: "The Vibe", category: "space" },
+  { id: "g12", src: img("1519500099198-fd81846b8f03", 1000), alt: "Warm champagne light through the salon", caption: "The Vibe", category: "space" },
 ];
 
 /* --------------------------- Testimonials ------------------------- */
@@ -373,7 +373,7 @@ export const offers: Offer[] = [
     price: "₹399",
     was: "₹499",
     discount: "20% OFF",
-    image: img("1620331312220-0e4e6abd6fa2", 800),
+    image: img("1504593811423-6dd665756598", 800),
   },
   {
     id: "o2",
