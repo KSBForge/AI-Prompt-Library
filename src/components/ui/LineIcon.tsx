@@ -1,15 +1,38 @@
-import { ChefHat, Gem, HeartHandshake, Sprout, Star, Users } from "lucide-react";
+import {
+  Gem,
+  HeartHandshake,
+  Scissors,
+  Sparkles,
+  SprayCan,
+  Star,
+  Users,
+  Flower2,
+} from "lucide-react";
 import { cn } from "../../lib/utils";
 
-export type LineIconName = "chef" | "leaf" | "heart" | "gem" | "users" | "star";
+export type LineIconName =
+  | "gem"
+  | "users"
+  | "star"
+  | "heart"
+  | "leaf"
+  | "scissors"
+  | "sparkle"
+  | "camera"
+  | "flame"
+  | "drop";
 
-const ICONS: Record<LineIconName, typeof ChefHat> = {
-  chef: ChefHat,
-  leaf: Sprout,
-  heart: HeartHandshake,
+const ICONS: Record<LineIconName, typeof Gem> = {
   gem: Gem,
   users: Users,
   star: Star,
+  heart: HeartHandshake,
+  leaf: Flower2,
+  scissors: Scissors,
+  sparkle: Sparkles,
+  camera: SprayCan,
+  flame: Sparkles,
+  drop: Sparkles,
 };
 
 export function LineIcon({ name, className }: { name: LineIconName; className?: string }) {
