@@ -21,3 +21,8 @@ dist-ssr/
 
 # Freebuff local state
 .freebuff/
+
+# Agent/tooling artifacts
+.claude/
+isolate/
+.vly-run/
