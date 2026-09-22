@@ -4,17 +4,19 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useState } from "react";
 import { About } from "./components/About";
-import { Booking } from "./components/Booking";
-import { FinalCta } from "./components/FinalCta";
+import { ChefSection } from "./components/ChefSection";
+import { Concierge } from "./components/Concierge";
+import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
 import { GallerySection } from "./components/GallerySection";
 import { Hero } from "./components/Hero";
 import { LoadingScreen } from "./components/LoadingScreen";
+import { MenuSection } from "./components/MenuSection";
 import { Navbar } from "./components/Navbar";
-import { Offers } from "./components/Offers";
-import { Products } from "./components/Products";
-import { Services } from "./components/Services";
+import { Reservation } from "./components/Reservation";
+import { StatBar } from "./components/StatBar";
 import { Testimonials } from "./components/Testimonials";
+import { WhyChoose } from "./components/WhyChoose";
 import { CursorGlow, ScrollProgress } from "./components/ui/ScrollFX";
 import { setLenis } from "./lib/scroll";
 import { usePrefersReducedMotion } from "./hooks/usePrefersReducedMotion";
@@ -68,17 +70,19 @@ export default function App() {
 
       <main>
         <Hero start={!loading} />
+        <StatBar />
         <About />
-        <Services />
+        <WhyChoose />
+        <MenuSection />
+        <ChefSection />
         <GallerySection />
-        <Products />
-        <Offers />
         <Testimonials />
-        <FinalCta />
-        <Booking />
+        <Reservation />
+        <Contact />
       </main>
 
       <Footer />
+      <Concierge />
     </>
   );
 }

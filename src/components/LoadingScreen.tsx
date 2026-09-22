@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { lockBodyScroll, unlockBodyScroll } from "../lib/scroll";
 import { LogoMark } from "./ui/Logo";
 
-const letters = "LUXE".split("");
+const letters = "SAVORÉ".split("");
 
 export function LoadingScreen({ onDone }: { onDone: () => void }) {
   const [progress, setProgress] = useState(0);
@@ -49,7 +49,7 @@ export function LoadingScreen({ onDone }: { onDone: () => void }) {
         <LogoMark className="h-14 w-14 text-gold" />
       </motion.div>
 
-      <h1 className="mt-8 flex overflow-hidden font-serif text-5xl tracking-[0.3em] text-ivory sm:text-6xl" aria-label="LUXE">
+      <h1 className="mt-8 flex overflow-hidden font-serif text-5xl tracking-[0.18em] text-ivory sm:text-6xl" aria-label="SAVORÉ">
         {letters.map((letter, i) => (
           <motion.span
             key={i}
@@ -76,7 +76,7 @@ export function LoadingScreen({ onDone }: { onDone: () => void }) {
         transition={{ duration: 0.9, delay: 0.95 }}
         className="mt-6 text-center font-script text-xl text-gold/85"
       >
-        Beauty Beyond Boundaries.
+        Good Food. Good People. Great Memories.
       </motion.p>
 
       <div className="absolute bottom-12 flex w-56 flex-col items-center gap-3">
@@ -86,7 +86,7 @@ export function LoadingScreen({ onDone }: { onDone: () => void }) {
             style={{ width: `${progress}%` }}
           />
         </div>
-        <p className="font-mono text-[10px] tracking-[0.3em] text-muted/70">{progress}% · UNISEX SALON</p>
+        <p className="font-mono text-[10px] tracking-[0.3em] text-muted/70">{progress}%</p>
       </div>
     </motion.div>
   );

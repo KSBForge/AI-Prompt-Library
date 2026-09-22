@@ -1,24 +1,21 @@
 import { delay } from "./utils";
-import type { BookingInput, BookingResult } from "../data/luxe";
+import type { ReservationInput, ReservationResult } from "../data/restaurant";
 
 /**
- * LUXE integration layer. The site ships fully functional offline, and every
- * call transparently upgrades to a real backend the moment an env var is set:
- *  - VITE_BOOKING_WEBHOOK_URL → POST bookings (n8n / Zapier / Make / CRM…)
- *  - VITE_CONCIERGE_API_URL   → POST { message, history } → { reply }
- *
- * Wire it to Google Sheets via n8n, WhatsApp Cloud API, email automation or
- * AI lead qualification — the payload is plain JSON: BookingInput + source.
+ * Integration layer. The site ships fully functional offline, and every call
+ * transparently upgrades to a real backend the moment an env var is set:
+ *  - VITE_RESERVATION_API_URL  → POST reservations (webhook, CRM, Convex action…)
+ *  - VITE_CONCIERGE_API_URL    → POST { message, history } → { reply }
  */
 
-function bookingRef(): string {
+function reservationId(): string {
   const stamp = Date.now().toString(36).toUpperCase();
   const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `LX-${stamp}-${rand}`;
+  return `SVR-${stamp}-${rand}`;
 }
 
-export async function submitBooking(input: BookingInput): Promise<BookingResult> {
-  const endpoint = import.meta.env.VITE_BOOKING_WEBHOOK_URL;
+export async function submitReservation(input: ReservationInput): Promise<ReservationResult> {
+  const endpoint = import.meta.env.VITE_RESERVATION_API_URL;
 
   if (endpoint) {
     const res = await fetch(endpoint, {
@@ -26,11 +23,11 @@ export async function submitBooking(input: BookingInput): Promise<BookingResult>
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...input, source: "website" }),
     });
-    if (!res.ok) throw new Error(`Booking service responded with ${res.status}`);
-    const data = (await res.json()) as Partial<BookingResult>;
+    if (!res.ok) throw new Error(`Reservation service responded with ${res.status}`);
+    const data = (await res.json()) as Partial<ReservationResult>;
     return {
       ...input,
-      ref: data.ref ?? bookingRef(),
+      id: data.id ?? reservationId(),
       createdAt: data.createdAt ?? new Date().toISOString(),
     };
   }
@@ -39,13 +36,13 @@ export async function submitBooking(input: BookingInput): Promise<BookingResult>
   await delay(1900);
   return {
     ...input,
-    ref: bookingRef(),
+    id: reservationId(),
     createdAt: new Date().toISOString(),
   };
 }
 
 export async function subscribeNewsletter(email: string): Promise<boolean> {
-  const endpoint = import.meta.env.VITE_BOOKING_WEBHOOK_URL; // shared intake endpoint
+  const endpoint = import.meta.env.VITE_RESERVATION_API_URL; // shared intake endpoint
   try {
     if (endpoint) {
       const res = await fetch(endpoint, {

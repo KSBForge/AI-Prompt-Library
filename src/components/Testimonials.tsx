@@ -2,13 +2,11 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { PanInfo } from "framer-motion";
-import { testimonialStats, testimonials } from "../data/luxe";
+import { testimonials } from "../data/restaurant";
 import { cn } from "../lib/utils";
 import { Reveal } from "./ui/Reveal";
 import { ScriptText } from "./ui/ScriptText";
-import { SectionHeading } from "./ui/SectionHeading";
 import { Stars } from "./ui/Stars";
-import { KpiStrip } from "./ui/KpiStrip";
 
 function usePerView() {
   const [perView, setPerView] = useState(1);
@@ -46,28 +44,26 @@ export function Testimonials() {
   };
 
   return (
-    <section id="testimonials" data-parallax-root className="relative overflow-hidden section-pad">
-      <div className="pointer-events-none absolute -right-40 top-24 h-[460px] w-[460px] rounded-full bg-gold/[0.05] blur-[130px]" />
+    <section data-parallax-root className="relative overflow-hidden section-pad bg-secondary/40">
+      <div className="pointer-events-none absolute -right-40 bottom-10 h-[460px] w-[460px] rounded-full bg-gold/[0.05] blur-[130px]" />
 
       <div className="container-luxe">
         <div className="flex flex-wrap items-end justify-between gap-8">
-          <div className="max-w-xl">
-            <SectionHeading
-              eyebrow="Testimonials"
-              title={
-                <>
-                  What Our
-                  <br />
-                  Clients <span className="gold-text italic">Say</span>
-                </>
-              }
-              description="Real experiences. Real people. Real confidence."
-            />
+          <div>
+            <Reveal>
+              <span className="eyebrow">Testimonials</span>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <h2 className="heading-lg mt-5">
+                What Our
+                <br />
+                <span className="gold-text italic">Guests Say</span>
+              </h2>
+            </Reveal>
           </div>
 
           <Reveal delay={0.2} className="flex items-center gap-6">
-            <ScriptText lines={["“Beautiful People", "Brighter Stories”"]} className="hidden text-2xl xl:block" />
-            <span className="hidden font-serif text-sm tracking-wider2 text-muted sm:block">
+            <span className="font-serif text-sm tracking-wider2 text-muted">
               {String(index + 1).padStart(2, "0")} / {String(maxIndex + 1).padStart(2, "0")}
             </span>
             <div className="flex gap-3">
@@ -98,6 +94,7 @@ export function Testimonials() {
                 <ArrowRight className="h-[18px] w-[18px]" strokeWidth={1.6} />
               </button>
             </div>
+            <ScriptText lines={["Real People", "Real Stories"]} className="hidden text-2xl xl:block" underline />
           </Reveal>
         </div>
 
@@ -124,35 +121,44 @@ export function Testimonials() {
                   className="shrink-0 basis-full px-3 sm:basis-1/2 lg:basis-1/3"
                   draggable={false}
                 >
-                  <figure className="glass group flex h-full flex-col overflow-hidden rounded-2xl transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/40 hover:shadow-lift">
-                    {/* client photograph */}
-                    <div className="relative h-52 overflow-hidden">
-                      <img
-                        src={t.image}
-                        alt={`${t.name} — ${t.service} client at LUXE`}
-                        loading="lazy"
-                        decoding="async"
-                        className="img-cinema h-full w-full transition-transform duration-[1.5s] ease-out group-hover:scale-[1.06]"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#14110d] via-transparent to-transparent" />
-                      <span className="absolute left-4 top-4 flex gap-0.5 text-gold" aria-hidden>
-                        {Array.from({ length: t.rating }).map((_, i) => (
-                          <span key={i} className="text-[13px]">★</span>
-                        ))}
-                      </span>
-                    </div>
-
-                    <blockquote className="flex-1 px-6 pt-5 text-[13.5px] leading-relaxed text-ivory/90">
-                      “{t.quote}”
+                  <figure className="glass group flex h-full flex-col rounded-2xl p-7 transition-all duration-500 hover:-translate-y-1.5 hover:border-gold/40 hover:shadow-lift">
+                    <span className="font-serif text-6xl leading-[0.6] text-gold/50" aria-hidden>
+                      “
+                    </span>
+                    <blockquote className="mt-5 flex-1 font-serif text-[15.5px] italic leading-relaxed text-ivory/90">
+                      {t.quote}
                     </blockquote>
-
-                    <figcaption className="mt-5 flex items-center justify-between border-t border-gold/10 px-6 py-4">
+                    <motion.div
+                      className="mt-5 flex gap-1"
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true }}
+                      variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
+                    >
+                      {Array.from({ length: t.rating }).map((_, i) => (
+                        <motion.span
+                          key={i}
+                          variants={{
+                            hidden: { opacity: 0, scale: 0.3, rotate: -30 },
+                            visible: { opacity: 1, scale: 1, rotate: 0 },
+                          }}
+                          transition={{ type: "spring", stiffness: 400, damping: 14 }}
+                          className="text-gold"
+                        >
+                          ★
+                        </motion.span>
+                      ))}
+                    </motion.div>
+                    <figcaption className="mt-5 flex items-center gap-4 border-t border-gold/10 pt-5">
+                      <img
+                        src={t.avatar}
+                        alt={t.name}
+                        loading="lazy"
+                        className="img-cinema h-11 w-11 rounded-full ring-1 ring-gold/40"
+                      />
                       <span>
                         <span className="block text-sm font-semibold text-ivory">{t.name}</span>
-                        <span className="block text-xs text-muted">{t.service}</span>
-                      </span>
-                      <span className="font-serif text-4xl leading-[0.5] text-gold/40" aria-hidden>
-                        ”
+                        <span className="block text-xs text-muted">{t.role}</span>
                       </span>
                     </figcaption>
                   </figure>
@@ -160,24 +166,6 @@ export function Testimonials() {
               ))}
             </motion.div>
           </div>
-        </Reveal>
-
-        {/* Stats strip + thank-you panel */}
-        <Reveal delay={0.2}>
-          <KpiStrip
-            stats={testimonialStats}
-            className="mt-14"
-            trailing={
-              <div className="flex flex-col items-start gap-1.5">
-                <p className="font-script text-3xl text-gold">
-                  Thank You <span aria-hidden>♡</span>
-                </p>
-                <p className="text-[10px] font-semibold uppercase tracking-wider2 text-muted">
-                  For being a part of our journey
-                </p>
-              </div>
-            }
-          />
         </Reveal>
       </div>
     </section>
