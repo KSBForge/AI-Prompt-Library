@@ -1,20 +1,20 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, Phone, Search, X } from "lucide-react";
+import { CalendarCheck, Menu, Phone, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { restaurantInfo } from "../data/restaurant";
+import { salonInfo } from "../data/luxe";
 import { cn } from "../lib/utils";
 import { scrollToSection } from "../lib/scroll";
 import { Logo } from "./ui/Logo";
 import { EASE } from "./ui/Reveal";
-import { SearchOverlay } from "./SearchOverlay";
 
 const NAV_LINKS = [
   { id: "home", label: "Home" },
   { id: "about", label: "About" },
-  { id: "menu", label: "Menu" },
+  { id: "services", label: "Services" },
   { id: "gallery", label: "Gallery" },
-  { id: "reservation", label: "Reservation" },
+  { id: "offers", label: "Offers" },
   { id: "contact", label: "Contact" },
+  { id: "booking", label: "Booking" },
 ] as const;
 
 type SectionId = (typeof NAV_LINKS)[number]["id"];
@@ -23,7 +23,6 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<SectionId>("home");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 48);
@@ -32,7 +31,7 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Scroll-spy: gold indicator follows the section in view
+  // Scroll-spy: champagne underline follows the section in view
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -68,7 +67,7 @@ export function Navbar() {
         )}
       >
         <div className="container-luxe flex items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
-          <button onClick={() => go("home")} aria-label="SAVORÉ — back to top" className="shrink-0">
+          <button onClick={() => go("home")} aria-label="LUXE — back to top" className="shrink-0">
             <Logo compact={scrolled} />
           </button>
 
@@ -95,19 +94,11 @@ export function Navbar() {
 
           <div className="flex items-center gap-2.5 md:gap-4">
             <button
-              onClick={() => setSearchOpen(true)}
-              aria-label="Search the menu"
-              className="hidden h-10 w-10 items-center justify-center rounded-full thin-gold-border text-ivory/85 transition-all duration-300 hover:border-gold/60 hover:bg-gold/10 hover:text-gold md:flex"
-            >
-              <Search className="h-4 w-4" strokeWidth={1.8} />
-            </button>
-
-            <button
-              onClick={() => go("reservation")}
+              onClick={() => go("booking")}
               className="group hidden items-center gap-2 rounded-full thin-gold-border bg-black/20 px-6 py-2.5 text-[12px] font-semibold uppercase tracking-wider2 text-ivory backdrop-blur-sm transition-all duration-500 hover:border-gold/70 hover:bg-gold/10 hover:text-gold-bright sm:flex"
             >
-              Book a Table
-              <span className="transition-transform duration-500 group-hover:translate-x-1">→</span>
+              <CalendarCheck className="h-4 w-4 text-gold transition-colors group-hover:text-gold-bright" strokeWidth={1.7} />
+              Book Appointment
             </button>
 
             <button
@@ -160,27 +151,25 @@ export function Navbar() {
                 className="mt-10 flex flex-col items-center gap-3"
               >
                 <button
-                  onClick={() => go("reservation")}
+                  onClick={() => go("booking")}
                   className="rounded-full bg-gold px-9 py-4 text-[13px] font-bold uppercase tracking-wider2 text-primary shadow-gold-glow"
                 >
-                  Book a Table →
+                  Book Appointment →
                 </button>
                 <a
-                  href={restaurantInfo.phoneHref}
+                  href={salonInfo.phoneHref}
                   className="mt-2 flex items-center gap-2 text-sm text-muted transition-colors hover:text-gold"
                 >
-                  <Phone className="h-3.5 w-3.5" /> {restaurantInfo.phone}
+                  <Phone className="h-3.5 w-3.5" /> {salonInfo.phone}
                 </a>
               </motion.div>
             </div>
             <p className="pb-8 text-center font-script text-2xl text-gold/80">
-              {restaurantInfo.tagline}
+              Self Care Looks Good On You
             </p>
           </motion.div>
         ) : null}
       </AnimatePresence>
-
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }

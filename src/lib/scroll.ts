@@ -1,4 +1,4 @@
-import type { ReservationInput, ReservationResult } from "../data/restaurant";
+import type { BookingInput, BookingResult } from "../data/luxe";
 
 /* ------------------------------------------------------------------ */
 /*  Singletons for smooth scrolling + scroll locking (Lenis aware)     */
@@ -16,7 +16,7 @@ export function setLenis(instance: LenisLike | null) {
   lenisInstance = instance;
 }
 
-/** Smoothly scroll to a section id like "#menu". Uses Lenis when active. */
+/** Smoothly scroll to a section id like "#services". Uses Lenis when active. */
 export function scrollToSection(hash: string, offset = -76) {
   const el = document.querySelector(hash);
   if (!el) return;
@@ -46,7 +46,7 @@ export function unlockBodyScroll() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Calendar export (.ics) for confirmed reservations                  */
+/*  Calendar export (.ics) for confirmed appointments                  */
 /* ------------------------------------------------------------------ */
 
 function icsStamp(date: Date): string {
@@ -69,24 +69,24 @@ function to24h(time: string): { h: number; min: number } {
   return { h, min };
 }
 
-/** Generates an .ics file so guests can add the reservation to their calendar. */
-export function downloadReservationICS(reservation: ReservationResult) {
-  const start = new Date(`${reservation.date}T00:00:00`);
-  const { h, min } = to24h(reservation.time);
+/** Generates an .ics file so guests can add the appointment to their calendar. */
+export function downloadBookingICS(booking: BookingResult) {
+  const start = new Date(`${booking.date}T00:00:00`);
+  const { h, min } = to24h(booking.time);
   start.setHours(h, min, 0, 0);
-  const end = new Date(start.getTime() + 2 * 60 * 60 * 1000); // assume 2h dining window
+  const end = new Date(start.getTime() + 60 * 60 * 1000); // assume 1h appointment
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//SAVORE Restaurant//Reservation//EN",
+    "PRODID:-//LUXE Unisex Salon//Appointment//EN",
     "BEGIN:VEVENT",
-    `UID:${reservation.id}@savore.in`,
+    `UID:${booking.ref}@luxesalon.in`,
     `DTSTAMP:${icsStamp(new Date())}`,
     `DTSTART:${icsStamp(start)}`,
     `DTEND:${icsStamp(end)}`,
-    `SUMMARY:Table for ${reservation.guests} at SAVORÉ Restaurant`,
-    `DESCRIPTION:Reservation ${reservation.id}. ${reservation.requests ? `Requests: ${reservation.requests}` : ""}`.trim(),
-    "LOCATION:123 Food Street\\, Jaipur\\, India",
+    `SUMMARY:${booking.service} at LUXE Unisex Salon`,
+    `DESCRIPTION:Appointment ${booking.ref}. ${booking.message ? `Notes: ${booking.message}` : ""}`.trim(),
+    "LOCATION:C-Scheme\\, Jaipur\\, Rajasthan",
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");
@@ -95,7 +95,7 @@ export function downloadReservationICS(reservation: ReservationResult) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `SAVORE-${reservation.id}.ics`;
+  a.download = `LUXE-${booking.ref}.ics`;
   document.body.appendChild(a);
   a.click();
   a.remove();

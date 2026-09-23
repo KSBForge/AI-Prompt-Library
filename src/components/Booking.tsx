@@ -4,23 +4,18 @@ import {
   CalendarPlus,
   Check,
   Clock,
-  Gem,
-  Heart,
   Loader2,
   Lock,
+  Mail,
   MessageSquare,
   Phone,
+  Scissors,
   User,
-  Users,
 } from "lucide-react";
 import { useState, type FormEvent } from "react";
-import {
-  guestOptions,
-  reservationTimeSlots,
-  type ReservationResult,
-} from "../data/restaurant";
-import { submitReservation } from "../lib/api";
-import { downloadReservationICS } from "../lib/scroll";
+import { bookingServiceOptions, bookingTimeSlots, type BookingResult } from "../data/luxe";
+import { submitBooking } from "../lib/api";
+import { downloadBookingICS } from "../lib/scroll";
 import { cn } from "../lib/utils";
 import { EASE, Reveal } from "./ui/Reveal";
 import { ScriptText } from "./ui/ScriptText";
@@ -29,19 +24,20 @@ import { SectionHeading } from "./ui/SectionHeading";
 interface FormState {
   name: string;
   phone: string;
+  email: string;
+  service: string;
   date: string;
   time: string;
-  guests: string;
-  requests: string;
+  message: string;
 }
 
-const EMPTY: FormState = { name: "", phone: "", date: "", time: "", guests: "", requests: "" };
+const EMPTY: FormState = { name: "", phone: "", email: "", service: "", date: "", time: "", message: "" };
 const today = new Date().toISOString().split("T")[0];
 
 const assurances = [
-  { icon: CalendarCheck, title: "Easy Booking", caption: "Quick & simple reservation process" },
-  { icon: Gem, title: "Exclusive Experience", caption: "A premium dining atmosphere" },
-  { icon: Heart, title: "Memorable Moments", caption: "Good food, great company" },
+  { icon: CalendarCheck, title: "Easy Booking", caption: "Quick & simple appointment process" },
+  { icon: Scissors, title: "Expert Stylists", caption: "Matched to your service" },
+  { icon: Check, title: "Free Consultation", caption: "Every visit starts with one" },
 ];
 
 function FieldError({ message }: { message?: string }) {
@@ -53,11 +49,11 @@ function FieldError({ message }: { message?: string }) {
   );
 }
 
-export function Reservation() {
+export function Booking() {
   const [form, setForm] = useState<FormState>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
-  const [result, setResult] = useState<ReservationResult | null>(null);
+  const [result, setResult] = useState<BookingResult | null>(null);
 
   const set = (key: keyof FormState) => (value: string) => {
     setForm((f) => ({ ...f, [key]: value }));
@@ -68,10 +64,12 @@ export function Reservation() {
     const next: Partial<Record<keyof FormState, string>> = {};
     if (form.name.trim().length < 2) next.name = "Please share your full name.";
     if (!/^[+\d][\d\s-]{7,14}$/.test(form.phone.trim())) next.phone = "Enter a valid phone number.";
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim()))
+      next.email = "Enter a valid email address.";
+    if (!form.service) next.service = "Which service are you booking?";
     if (!form.date) next.date = "Choose a date for your visit.";
     else if (form.date < today) next.date = "Please choose today or a future date.";
     if (!form.time) next.time = "Select a preferred time.";
-    if (!form.guests) next.guests = "How many guests will join us?";
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -81,15 +79,16 @@ export function Reservation() {
     if (status !== "idle" || !validate()) return;
     setStatus("submitting");
     try {
-      const reservation = await submitReservation({
+      const booking = await submitBooking({
         name: form.name.trim(),
         phone: form.phone.trim(),
+        email: form.email.trim(),
+        service: form.service,
         date: form.date,
         time: form.time,
-        guests: parseInt(form.guests, 10) || 2,
-        requests: form.requests.trim() || undefined,
+        message: form.message.trim() || undefined,
       });
-      setResult(reservation);
+      setResult(booking);
       setStatus("success");
     } catch {
       setStatus("idle");
@@ -108,25 +107,23 @@ export function Reservation() {
     cn("field-input pl-10", invalid && "border-[#e08a7a]/60 focus:border-[#e08a7a] focus:ring-[#e08a7a]/15");
 
   return (
-    <section id="reservation" data-parallax-root className="relative overflow-hidden section-pad">
-      {/* soft candle-light glow */}
+    <section id="booking" data-parallax-root className="relative overflow-hidden section-pad">
+      {/* soft champagne glow */}
       <div className="pointer-events-none absolute right-0 top-0 h-[540px] w-[540px] rounded-full bg-gold/[0.07] blur-[150px]" />
 
       <div className="container-luxe grid items-start gap-16 lg:grid-cols-[1fr_1.05fr] lg:gap-20">
         {/* Story side */}
         <div className="pt-2">
           <SectionHeading
-            eyebrow="Reservation"
+            eyebrow="Booking"
             title={
               <>
-                A Table
+                Reserve Your
                 <br />
-                for <span className="gold-text italic">Lifetime</span>
-                <br />
-                Memories
+                <span className="gold-text italic">Moment</span> of Calm
               </>
             }
-            description="At SAVORÉ, every reservation is the beginning of a special story. Book your table and let us make your moments truly unforgettable."
+            description="At LUXE, every appointment is the beginning of a transformation. Tell us what you need and our concierge will confirm your slot shortly."
           />
 
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
@@ -144,11 +141,11 @@ export function Reservation() {
           </div>
 
           <Reveal delay={0.5}>
-            <ScriptText lines={["Good Food", "Brings People Together"]} underline className="mt-14 text-3xl" />
+            <ScriptText lines={["Beauty Has", "No Gender"]} underline className="mt-14 text-3xl" />
           </Reveal>
         </div>
 
-        {/* Reservation card */}
+        {/* Booking card */}
         <Reveal delay={0.15}>
           <div className="glass-strong relative overflow-hidden rounded-[26px] p-7 shadow-lift sm:p-10">
             <div className="absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-gold/70 to-transparent" />
@@ -164,21 +161,21 @@ export function Reservation() {
                 >
                   <div className="flex items-center justify-center gap-4">
                     <span className="h-px w-10 bg-gold/50" />
-                    <p className="text-[11px] font-semibold uppercase tracking-luxe text-gold">Book a Table</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-luxe text-gold">Book Appointment</p>
                     <span className="h-px w-10 bg-gold/50" />
                   </div>
-                  <h3 className="mt-3 text-center font-serif text-3xl text-ivory">Reserve Your Table</h3>
+                  <h3 className="mt-3 text-center font-serif text-3xl text-ivory">Your Chair Awaits</h3>
                   <p className="mt-2 text-center text-xs text-muted">
                     Fill in the details below and we'll take care of the rest.
                   </p>
 
                   <form onSubmit={handleSubmit} noValidate className="mt-8 grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label htmlFor="res-name" className="field-label">Full Name</label>
+                      <label htmlFor="book-name" className="field-label">Full Name</label>
                       <div className="relative">
                         <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gold/70" strokeWidth={1.6} />
                         <input
-                          id="res-name"
+                          id="book-name"
                           type="text"
                           autoComplete="name"
                           placeholder="Enter your name"
@@ -191,11 +188,11 @@ export function Reservation() {
                     </div>
 
                     <div>
-                      <label htmlFor="res-phone" className="field-label">Phone Number</label>
+                      <label htmlFor="book-phone" className="field-label">Phone</label>
                       <div className="relative">
                         <Phone className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gold/70" strokeWidth={1.6} />
                         <input
-                          id="res-phone"
+                          id="book-phone"
                           type="tel"
                           autoComplete="tel"
                           placeholder="Enter your number"
@@ -207,12 +204,53 @@ export function Reservation() {
                       <FieldError message={errors.phone} />
                     </div>
 
+                    <div className="sm:col-span-2">
+                      <label htmlFor="book-email" className="field-label">
+                        Email <span className="normal-case text-muted/60">(optional)</span>
+                      </label>
+                      <div className="relative">
+                        <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gold/70" strokeWidth={1.6} />
+                        <input
+                          id="book-email"
+                          type="email"
+                          autoComplete="email"
+                          placeholder="you@example.com"
+                          value={form.email}
+                          onChange={(e) => set("email")(e.target.value)}
+                          className={inputCls(errors.email)}
+                        />
+                      </div>
+                      <FieldError message={errors.email} />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label htmlFor="book-service" className="field-label">Service</label>
+                      <div className="relative">
+                        <Scissors className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gold/70" strokeWidth={1.6} />
+                        <select
+                          id="book-service"
+                          value={form.service}
+                          onChange={(e) => set("service")(e.target.value)}
+                          className={cn(inputCls(errors.service), "appearance-none pr-9", !form.service && "text-muted/50")}
+                        >
+                          <option value="" disabled className="bg-secondary text-muted">Select a service</option>
+                          {bookingServiceOptions.map((option) => (
+                            <option key={option} value={option} className="bg-secondary text-ivory">
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gold/70">▾</span>
+                      </div>
+                      <FieldError message={errors.service} />
+                    </div>
+
                     <div>
-                      <label htmlFor="res-date" className="field-label">Date</label>
+                      <label htmlFor="book-date" className="field-label">Preferred Date</label>
                       <div className="relative">
                         <CalendarCheck className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gold/70" strokeWidth={1.6} />
                         <input
-                          id="res-date"
+                          id="book-date"
                           type="date"
                           min={today}
                           value={form.date}
@@ -224,17 +262,17 @@ export function Reservation() {
                     </div>
 
                     <div>
-                      <label htmlFor="res-time" className="field-label">Time</label>
+                      <label htmlFor="book-time" className="field-label">Preferred Time</label>
                       <div className="relative">
                         <Clock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gold/70" strokeWidth={1.6} />
                         <select
-                          id="res-time"
+                          id="book-time"
                           value={form.time}
                           onChange={(e) => set("time")(e.target.value)}
                           className={cn(inputCls(errors.time), "appearance-none pr-9", !form.time && "text-muted/50")}
                         >
                           <option value="" disabled className="bg-secondary text-muted">Select time</option>
-                          {reservationTimeSlots.map((slot) => (
+                          {bookingTimeSlots.map((slot) => (
                             <option key={slot} value={slot} className="bg-secondary text-ivory">
                               {slot}
                             </option>
@@ -246,43 +284,17 @@ export function Reservation() {
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label htmlFor="res-guests" className="field-label">Number of Guests</label>
-                      <div className="relative">
-                        <Users className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gold/70" strokeWidth={1.6} />
-                        <select
-                          id="res-guests"
-                          value={form.guests}
-                          onChange={(e) => set("guests")(e.target.value)}
-                          className={cn(inputCls(errors.guests), "appearance-none pr-9", !form.guests && "text-muted/50")}
-                        >
-                          <option value="" disabled className="bg-secondary text-muted">Select guests</option>
-                          {guestOptions.map((option, i) => (
-                            <option
-                              key={option}
-                              value={option === "10+ Guests" ? "10" : String(i + 1)}
-                              className="bg-secondary text-ivory"
-                            >
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gold/70">▾</span>
-                      </div>
-                      <FieldError message={errors.guests} />
-                    </div>
-
-                    <div className="sm:col-span-2">
-                      <label htmlFor="res-requests" className="field-label">
-                        Special Requests <span className="normal-case text-muted/60">(optional)</span>
+                      <label htmlFor="book-message" className="field-label">
+                        Message <span className="normal-case text-muted/60">(optional)</span>
                       </label>
                       <div className="relative">
                         <MessageSquare className="pointer-events-none absolute left-3.5 top-4 h-4 w-4 text-gold/70" strokeWidth={1.6} />
                         <textarea
-                          id="res-requests"
+                          id="book-message"
                           rows={3}
-                          placeholder="Any special requests? (e.g. birthday, anniversary)"
-                          value={form.requests}
-                          onChange={(e) => set("requests")(e.target.value)}
+                          placeholder="Any special requests? (e.g. bridal trial, beard sculpt)"
+                          value={form.message}
+                          onChange={(e) => set("message")(e.target.value)}
                           className={cn(inputCls(), "resize-none")}
                         />
                       </div>
@@ -297,11 +309,11 @@ export function Reservation() {
                         {status === "submitting" ? (
                           <>
                             <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.4} />
-                            Securing your table…
+                            Securing your slot…
                           </>
                         ) : (
                           <>
-                            Confirm Reservation
+                            Book Appointment
                             <span className="transition-transform duration-500 group-hover:translate-x-1.5">→</span>
                           </>
                         )}
@@ -333,33 +345,33 @@ export function Reservation() {
                     </motion.span>
 
                     <p className="mt-6 text-[11px] font-semibold uppercase tracking-luxe text-gold">Thank You</p>
-                    <h3 className="mt-2 font-serif text-3xl text-ivory">Reservation Confirmed</h3>
+                    <h3 className="mt-2 font-serif text-3xl text-ivory">Appointment Requested</h3>
                     <p className="mx-auto mt-3 max-w-sm text-xs leading-relaxed text-muted">
                       We can't wait to welcome you, {result.name.split(" ")[0]}. Our concierge will
-                      confirm your table shortly.
+                      confirm your slot shortly.
                     </p>
 
                     <div className="mx-auto mt-7 max-w-md rounded-2xl border border-gold/20 bg-black/30 p-5 text-left">
                       <div className="flex items-center justify-between border-b border-gold/10 pb-3">
-                        <span className="text-[10px] uppercase tracking-wider2 text-muted">Reservation ID</span>
-                        <span className="font-mono text-sm font-semibold text-gold">{result.id}</span>
+                        <span className="text-[10px] uppercase tracking-wider2 text-muted">Booking Ref</span>
+                        <span className="font-mono text-sm font-semibold text-gold">{result.ref}</span>
                       </div>
                       <dl className="mt-3 space-y-2 text-[13px]">
                         {[
                           ["Guest", result.name],
+                          ["Service", result.service],
                           ["Date", new Date(`${result.date}T00:00`).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" })],
                           ["Time", result.time],
-                          ["Guests", `${result.guests}`],
                         ].map(([label, value]) => (
                           <div key={label} className="flex items-center justify-between">
                             <dt className="text-muted">{label}</dt>
                             <dd className="font-medium text-ivory">{value}</dd>
                           </div>
                         ))}
-                        {result.requests ? (
+                        {result.message ? (
                           <div className="flex items-start justify-between gap-6">
-                            <dt className="shrink-0 text-muted">Requests</dt>
-                            <dd className="text-right font-medium text-ivory/85">{result.requests}</dd>
+                            <dt className="shrink-0 text-muted">Notes</dt>
+                            <dd className="text-right font-medium text-ivory/85">{result.message}</dd>
                           </div>
                         ) : null}
                       </dl>
@@ -367,7 +379,7 @@ export function Reservation() {
 
                     <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
                       <button
-                        onClick={() => downloadReservationICS(result)}
+                        onClick={() => downloadBookingICS(result)}
                         className="thin-gold-border inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-[12px] font-semibold uppercase tracking-wider2 text-ivory transition-all duration-400 hover:border-gold/70 hover:bg-gold/10 hover:text-gold-bright"
                       >
                         <CalendarPlus className="h-4 w-4" strokeWidth={1.7} />
